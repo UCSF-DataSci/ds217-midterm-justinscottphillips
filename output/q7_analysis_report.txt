@@ -1,0 +1,5 @@
+**Key Findings:**
+
+1. Demographics across sites were highly consistent. Mean age was around 80–81 years and mean BMI about 26, with only minor variation between sites.
+2. Blood pressure and cholesterol varibles were stable across sites, with average systolic BP near 117 mmHg and LDL cholesterol around 85 mg/dL.
+3. Intervention outcomes showed small differences. Treatment group adherence was slightly higher in Treatment B (61.1%) compared with Control (60.8%) and Treatment A (60.5%), and the incidence of cardiovascular outcomes was marginally lower in Treatment A (32.0%) than in the other groups.

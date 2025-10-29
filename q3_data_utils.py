@@ -1,4 +1,5 @@
-# TODO: Add shebang line: #!/usr/bin/env python3
+#!/usr/bin/env python3
+
 # Assignment 5, Question 3: Data Utilities Library
 # Core reusable functions for data loading, cleaning, and transformation.
 #
@@ -23,11 +24,10 @@ def load_data(filepath: str) -> pd.DataFrame:
         >>> df.shape
         (10000, 18)
     """
-    pass
-
+    return pd.read_csv(filepath)
 
 def clean_data(df: pd.DataFrame, remove_duplicates: bool = True,
-               sentinel_value: float = -999) -> pd.DataFrame:
+               sentinel_value = (-999, -1)) -> pd.DataFrame:
     """
     Basic data cleaning: remove duplicates and replace sentinel values with NaN.
 
@@ -42,8 +42,16 @@ def clean_data(df: pd.DataFrame, remove_duplicates: bool = True,
     Example:
         >>> df_clean = clean_data(df, sentinel_value=-999)
     """
-    pass
-
+    df = df.copy()
+    if remove_duplicates:
+        df = df.drop_duplicates()
+    # Replace exact sentinel matches with NaN
+    df = df.replace(sentinel_value, np.nan)
+    # Trim whitespace
+    obj_cols = df.select_dtypes(include='object').columns
+    for c in obj_cols:
+        df[c] = df[c].astype(str).str.strip().replace({'nan': np.nan})
+    return df
 
 def detect_missing(df: pd.DataFrame) -> pd.Series:
     """
@@ -60,7 +68,8 @@ def detect_missing(df: pd.DataFrame) -> pd.Series:
         >>> missing['age']
         15
     """
-    pass
+    # Number of missing values per column
+    return df.isna().sum()
 
 
 def fill_missing(df: pd.DataFrame, column: str, strategy: str = 'mean') -> pd.DataFrame:
@@ -78,7 +87,25 @@ def fill_missing(df: pd.DataFrame, column: str, strategy: str = 'mean') -> pd.Da
     Example:
         >>> df_filled = fill_missing(df, 'age', strategy='median')
     """
-    pass
+    if column not in df.columns:
+        return df.copy()   # or return df
+    out = df.copy()
+    if strategy == 'mean':
+        # coerce to numeric if needed
+        if not pd.api.types.is_numeric_dtype(out[column]):
+            out[column] = pd.to_numeric(out[column], errors='coerce')
+        fill_val = out[column].mean()
+        out[column] = out[column].fillna(fill_val)
+    elif strategy == 'median':
+        if not pd.api.types.is_numeric_dtype(out[column]):
+            out[column] = pd.to_numeric(out[column], errors='coerce')
+        fill_val = out[column].median()
+        out[column] = out[column].fillna(fill_val)
+    elif strategy == 'ffill':
+        out[column] = out[column].fillna(method='ffill')
+    else:
+        raise ValueError("strategy must be one of 'mean', 'median', or 'ffill'")
+    return out
 
 
 def filter_data(df: pd.DataFrame, filters: list) -> pd.DataFrame:
@@ -111,7 +138,27 @@ def filter_data(df: pd.DataFrame, filters: list) -> pd.DataFrame:
         >>> filters = [{'column': 'age', 'condition': 'in_range', 'value': [18, 65]}]
         >>> df_filtered = filter_data(df, filters)
     """
-    pass
+    out = df.copy()
+    for f in filters:
+        col = f.get('column')
+        cond = f.get('condition')
+        val = f.get('value')
+        if col not in out.columns:
+            raise KeyError(f"Filter column '{col}' not in DataFrame")
+        if cond == 'equals':
+            out = out[out[col] == val]
+        elif cond == 'greater_than':
+            out = out[pd.to_numeric(out[col], errors='coerce') > val]
+        elif cond == 'less_than':
+            out = out[pd.to_numeric(out[col], errors='coerce') < val]
+        elif cond == 'in_range':
+            lo, hi = val
+            out = out[(pd.to_numeric(out[col], errors='coerce') >= lo) & (pd.to_numeric(out[col], errors='coerce') <= hi)]
+        elif cond == 'in_list':
+            out = out[out[col].isin(val)]
+        else:
+            raise ValueError(f"Unsupported filter condition: {cond}")
+    return out
 
 
 def transform_types(df: pd.DataFrame, type_map: dict) -> pd.DataFrame:
@@ -134,7 +181,21 @@ def transform_types(df: pd.DataFrame, type_map: dict) -> pd.DataFrame:
         ... }
         >>> df_typed = transform_types(df, type_map)
     """
-    pass
+    out = df.copy()
+    for col, t in type_map.items():
+        if col not in out.columns:
+            raise KeyError(f"Column '{col}' not found in DataFrame")
+        if t == 'datetime':
+            out[col] = pd.to_datetime(out[col], errors='coerce')
+        elif t == 'numeric':
+            out[col] = pd.to_numeric(out[col], errors='coerce')
+        elif t == 'category':
+            out[col] = out[col].astype('category')
+        elif t == 'string':
+            out[col] = out[col].astype(str)
+        else:
+            raise ValueError(f"Unsupported target type: {t}")
+    return out
 
 
 def create_bins(df: pd.DataFrame, column: str, bins: list,
@@ -160,7 +221,13 @@ def create_bins(df: pd.DataFrame, column: str, bins: list,
         ...     labels=['<18', '18-34', '35-49', '50-64', '65+']
         ... )
     """
-    pass
+    if new_column is None:
+        new_column = f"{column}_binned"
+    if len(labels) != (len(bins) - 1):
+        raise ValueError("labels length must be len(bins)-1")
+    out = df.copy()
+    out[new_column] = pd.cut(out[column], bins=bins, labels=labels, include_lowest=True)
+    return out
 
 
 def summarize_by_group(df: pd.DataFrame, group_col: str,
@@ -188,7 +255,15 @@ def summarize_by_group(df: pd.DataFrame, group_col: str,
         ...     {'age': ['mean', 'std'], 'bmi': 'mean'}
         ... )
     """
-    pass
+    if group_col not in df.columns:
+        raise KeyError(f"Group column '{group_col}' not found in DataFrame")
+    if agg_dict:
+        return df.groupby(group_col).agg(agg_dict)
+    # default: mean, std, count for numeric columns
+    num_cols = df.select_dtypes(include=[np.number]).columns.tolist()
+    if not num_cols:
+        return df.groupby(group_col).size().to_frame('count')
+    return df.groupby(group_col)[num_cols].agg(['mean', 'std', 'count'])
 
 
 
@@ -206,8 +281,13 @@ if __name__ == '__main__':
     print("  - create_bins()")
     print("  - summarize_by_group()")
     
-    # TODO: Add simple test example here
+    # Add simple test example here
     # Example:
     # test_df = pd.DataFrame({'age': [25, 30, 35], 'bmi': [22, 25, 28]})
     # print("Test DataFrame created:", test_df.shape)
     # print("Test detect_missing:", detect_missing(test_df))
+    test_df = pd.DataFrame({'age': [25, 30, 35, -999], 'bmi': [22, 25, 28, -1]})
+    print("Test DataFrame created:", test_df.shape)
+    print("Test detect_missing:", detect_missing(test_df))
+    print("Test fill_missing:", fill_missing(test_df, 'age', strategy='mean'))
+  

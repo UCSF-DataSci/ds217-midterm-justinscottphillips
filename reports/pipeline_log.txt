@@ -1,0 +1,6 @@
+Starting clinical trial data pipeline...
+Q4 exploration completed successfully
+Q5 missing data completed successfully
+Q6 transformation completed successfully
+Q7 aggregation completed successfully
+Pipeline complete!

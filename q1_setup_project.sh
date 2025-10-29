@@ -21,4 +21,4 @@ python3 generate_data.py
 
 # TODO: Save the directory structure to reports/directory_structure.txt
 #       Hint: Use 'ls -la' or 'tree' command
-ls -R > reports/directory_structure.txt
+ls -la > reports/directory_structure.txt

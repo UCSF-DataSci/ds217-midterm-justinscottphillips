@@ -1,4 +1,4 @@
-mean: 48.56
-median: 50.0
-sum: 4856
-count: 100
+Mean: 46.8
+Median: 47.5
+Sum: 4681.0
+Count: 100.0

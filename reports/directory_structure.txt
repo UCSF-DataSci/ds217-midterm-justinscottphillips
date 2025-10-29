@@ -1,28 +1,24 @@
-GRADING_SPEC.md
-README.md
-__pycache__
-data
-generate_data.py
-output
-q1_setup_project.sh
-q2_config.txt
-q2_process_metadata.py
-q3_data_utils.py
-q4_exploration.ipynb
-q5_missing_data.ipynb
-q6_transformation.ipynb
-q7_aggregation.ipynb
-q8_run_pipeline.sh
-reports
-requirements.txt
-
-./__pycache__:
-q3_data_utils.cpython-313.pyc
-
-./data:
-clinical_trial_raw.csv
-
-./output:
-
-./reports:
-directory_structure.txt
+total 312
+drwxr-xr-x  23 justin  staff    736 Oct 28 21:06 .
+drwxr-xr-x  10 justin  staff    320 Oct 15 08:41 ..
+drwxr-xr-x  13 justin  staff    416 Oct 28 21:28 .git
+drwxr-xr-x   4 justin  staff    128 Oct 15 08:41 .github
+-rw-r--r--   1 justin  staff      8 Oct 15 08:41 .gitignore
+drwxr-xr-x   9 justin  staff    288 Oct 15 13:21 .venv
+-rw-r--r--   1 justin  staff  14662 Oct 15 08:41 GRADING_SPEC.md
+-rw-r--r--   1 justin  staff  12595 Oct 28 21:20 README.md
+drwxr-xr-x   4 justin  staff    128 Oct 28 18:18 __pycache__
+drwxr-xr-x   4 justin  staff    128 Oct 28 12:52 data
+-rwxr-xr-x   1 justin  staff  13266 Oct 15 08:41 generate_data.py
+drwxr-xr-x   5 justin  staff    160 Oct 28 21:05 output
+-rwxr-xr-x   1 justin  staff    775 Oct 28 21:30 q1_setup_project.sh
+-rw-r--r--   1 justin  staff     58 Oct 15 08:41 q2_config.txt
+-rwxr-xr-x   1 justin  staff   6551 Oct 28 14:38 q2_process_metadata.py
+-rw-r--r--   1 justin  staff   9512 Oct 28 18:10 q3_data_utils.py
+-rw-r--r--   1 justin  staff  45005 Oct 28 21:18 q4_exploration.ipynb
+-rw-r--r--   1 justin  staff   4824 Oct 15 08:41 q5_missing_data.ipynb
+-rw-r--r--   1 justin  staff   6194 Oct 15 08:41 q6_transformation.ipynb
+-rw-r--r--   1 justin  staff   4995 Oct 15 08:41 q7_aggregation.ipynb
+-rwxr-xr-x   1 justin  staff    908 Oct 15 08:41 q8_run_pipeline.sh
+drwxr-xr-x   3 justin  staff     96 Oct 15 13:34 reports
+-rw-r--r--   1 justin  staff     91 Oct 15 08:41 requirements.txt
